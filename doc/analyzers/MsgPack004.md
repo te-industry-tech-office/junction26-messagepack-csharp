@@ -45,3 +45,8 @@ public class C {
     public int B { get; set; }
 }
 ```
+
+## Types from referenced assemblies
+
+This analyzer only reports on members declared in the project being compiled.
+Members of a type defined in a referenced assembly are reported by the project that defines that type, so an unattributed public member of such a type must be fixed in its defining project.

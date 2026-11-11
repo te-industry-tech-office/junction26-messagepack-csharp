@@ -1,7 +1,9 @@
 ﻿// Copyright (c) All contributors. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.Testing;
 using VerifyCS = CSharpSourceGeneratorVerifier<MessagePack.SourceGenerator.MessagePackGenerator>;
 
 public class GenericsFormatterTests
@@ -492,6 +494,193 @@ namespace TempProject
                 AdditionalProjectReferences = { "DefiningProject" },
             },
         }.RunAsync();
+    }
+
+    /// <summary>
+    /// Asserts that a closed generic value type defined in a referenced <em>assembly</em> (metadata only, no syntax),
+    /// used as a member type, does not crash the generator or analyzer.
+    /// </summary>
+    /// <remarks>
+    /// See https://github.com/MessagePack-CSharp/MessagePack-CSharp/issues/2283.
+    /// </remarks>
+    [Fact]
+    public async Task ClosedGenericStruct_FromMetadataReference()
+    {
+        string defineSource = """
+using MessagePack;
+
+namespace TempProject
+{
+    [MessagePackObject]
+    public struct MyGenericStruct<T>
+    {
+        [Key(0)]
+        public T Content { get; set; }
+    }
+}
+""";
+
+        string usageSource = """
+using MessagePack;
+
+namespace TempProject
+{
+    [MessagePackObject]
+    public class MyObject
+    {
+        [Key(0)]
+        public MyGenericStruct<int> Value { get; set; }
+    }
+
+    [GeneratedMessagePackResolver]
+    partial class MyResolver { }
+}
+""";
+
+        await RunWithMetadataReferenceAsync(defineSource, usageSource, "TempProject.MyResolver.g.cs");
+    }
+
+    /// <summary>
+    /// Asserts that a closed generic <em>record struct</em> defined in a referenced assembly, used as a member type,
+    /// does not crash the generator or analyzer.
+    /// </summary>
+    /// <remarks>
+    /// See https://github.com/MessagePack-CSharp/MessagePack-CSharp/issues/2283.
+    /// </remarks>
+    [Fact]
+    public async Task ClosedGenericRecordStruct_FromMetadataReference()
+    {
+        string defineSource = """
+using MessagePack;
+
+namespace Lib;
+
+[MessagePackObject]
+public partial record struct Item<T>([property: Key(0)] string Key);
+""";
+
+        string usageSource = """
+using MessagePack;
+using Lib;
+
+namespace App;
+
+[MessagePackObject]
+public sealed partial record Cmd([property: Key(0)] string Scope)
+{
+    [Key(1)]
+    public Item<int> Member { get; init; }
+}
+
+[GeneratedMessagePackResolver]
+partial class AppResolver { }
+""";
+
+        await RunWithMetadataReferenceAsync(defineSource, usageSource, "App.AppResolver.g.cs", LanguageVersion.Latest);
+    }
+
+    /// <summary>
+    /// Asserts that a closed generic value type from a referenced assembly whose members lack a key attribute
+    /// does not crash the generator or analyzer, since its member diagnostics belong to the defining assembly.
+    /// </summary>
+    /// <remarks>
+    /// See https://github.com/MessagePack-CSharp/MessagePack-CSharp/issues/2283.
+    /// </remarks>
+    [Fact]
+    public async Task ClosedGenericStruct_FromMetadataReference_UnkeyedMember()
+    {
+        string defineSource = """
+using MessagePack;
+
+namespace TempProject
+{
+    [MessagePackObject]
+    public struct MyGenericStruct<T>
+    {
+        [Key(0)]
+        public string Key { get; set; }
+
+        public int Unkeyed { get; set; }
+    }
+}
+""";
+
+        string usageSource = """
+using MessagePack;
+
+namespace TempProject
+{
+    [MessagePackObject]
+    public class MyObject
+    {
+        [Key(0)]
+        public MyGenericStruct<int> Value { get; set; }
+    }
+
+    [GeneratedMessagePackResolver]
+    partial class MyResolver { }
+}
+""";
+
+        await RunWithMetadataReferenceAsync(defineSource, usageSource, "TempProject.MyResolver.g.cs");
+    }
+
+    /// <summary>
+    /// Compiles <paramref name="defineSource"/> to an assembly image, then verifies that the analyzers and the generator
+    /// handle <paramref name="usageSource"/> without diagnostics, referencing that image as metadata only,
+    /// and that the resolver named <paramref name="expectedResolverHintName"/> is generated.
+    /// </summary>
+    private static async Task RunWithMetadataReferenceAsync(string defineSource, string usageSource, string expectedResolverHintName, LanguageVersion languageVersion = LanguageVersion.CSharp7_3)
+    {
+        MetadataReference definingAssembly = await CompileToMetadataReferenceAsync("DefiningProject", defineSource, languageVersion);
+
+        // Run the analyzers and the generator, failing on any diagnostic (the defect surfaced as AD0001 and CS8785).
+        var test = new VerifyCS.Test(ReferencesSet.MessagePack)
+        {
+            LanguageVersion = languageVersion,
+            TestBehaviors = TestBehaviors.SkipGeneratedSourcesCheck,
+            TestState =
+            {
+                Sources = { usageSource },
+            },
+        };
+        test.TestState.AdditionalReferences.Add(definingAssembly);
+        await test.RunAsync();
+
+        // Verify that the resolver was actually generated for the usage assembly, since the defect caused it to be silently omitted.
+        ImmutableArray<MetadataReference> frameworkReferences = await ReferenceAssemblies.Net.Net80.ResolveAsync(LanguageNames.CSharp, CancellationToken.None);
+        Compilation usageCompilation = CreateCompilation("App", usageSource, languageVersion, frameworkReferences.Concat(ReferencesHelper.GetReferences(ReferencesSet.MessagePack)).Append(definingAssembly));
+        GeneratorDriverRunResult runResult = CSharpGeneratorDriver.Create(new MessagePack.SourceGenerator.MessagePackGenerator().AsSourceGenerator())
+            .RunGenerators(usageCompilation)
+            .GetRunResult();
+        Assert.Empty(runResult.Diagnostics.Where(d => d.Severity >= DiagnosticSeverity.Warning));
+        var hintNames = runResult.Results.SelectMany(r => r.GeneratedSources).Select(s => s.HintName).ToList();
+        Assert.Contains(expectedResolverHintName, hintNames);
+    }
+
+    private static async Task<MetadataReference> CompileToMetadataReferenceAsync(string assemblyName, string source, LanguageVersion languageVersion)
+    {
+        ImmutableArray<MetadataReference> frameworkReferences = await ReferenceAssemblies.Net.Net80.ResolveAsync(LanguageNames.CSharp, CancellationToken.None);
+        Compilation compilation = CreateCompilation(assemblyName, source, languageVersion, frameworkReferences.Concat(ReferencesHelper.GetReferences(ReferencesSet.MessagePack)), OutputKind.DynamicallyLinkedLibrary);
+
+        using var stream = new MemoryStream();
+        Microsoft.CodeAnalysis.Emit.EmitResult emitResult = compilation.Emit(stream);
+        if (!emitResult.Success)
+        {
+            throw new InvalidOperationException("Failed to compile referenced assembly: " + string.Join(Environment.NewLine, emitResult.Diagnostics));
+        }
+
+        return MetadataReference.CreateFromImage(stream.ToArray());
+    }
+
+    private static Compilation CreateCompilation(string assemblyName, string source, LanguageVersion languageVersion, IEnumerable<MetadataReference> references, OutputKind outputKind = OutputKind.DynamicallyLinkedLibrary)
+    {
+        var parseOptions = CSharpParseOptions.Default.WithLanguageVersion(languageVersion);
+        return CSharpCompilation.Create(
+            assemblyName,
+            new[] { CSharpSyntaxTree.ParseText(source, parseOptions) },
+            references.ToArray(),
+            new CSharpCompilationOptions(outputKind));
     }
 
     /// <summary>
