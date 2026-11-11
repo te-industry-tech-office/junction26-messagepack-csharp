@@ -1617,6 +1617,20 @@ This code generation has a minor upfront performance cost.
 > Note: When using Unity, dynamic code generation only works when targeting .NET Framework 4.x + mono runtime.
 For all other Unity targets, AOT is required.
 
+### Opting out of source generation
+
+A `[MessagePackObject]` type can opt out of source generation with `[MessagePackObject(SuppressSourceGeneration = true)]`.
+No formatter is generated for that type. It is serialized at run time by the dynamic resolvers, which use reflection, so such a type is not AOT-safe.
+
+The analyzer still validates these types, because they are serialized at run time and must still have a valid contract:
+- Members have a `[Key]` or `[IgnoreMember]` attribute ([MsgPack004](doc/analyzers/MsgPack004.md)).
+- Keys are unique and all of the same kind ([MsgPack005](doc/analyzers/MsgPack005.md)).
+- Non-public members require `AllowPrivate` ([MsgPack015](doc/analyzers/MsgPack015.md)).
+- Members have types that are themselves serializable ([MsgPack003](doc/analyzers/MsgPack003.md)).
+- Types are accessible to the resolver ([MsgPack012](doc/analyzers/MsgPack012.md)).
+
+The analyzer does not report the partial-class requirement ([MsgPack011](doc/analyzers/MsgPack011.md)) or the AOT-only checks ([MsgPack016](doc/analyzers/MsgPack016.md) and [MsgPack017](doc/analyzers/MsgPack017.md)) for these types, because they only apply when a formatter is generated.
+
 ### Customizations
 
 You can customize the generated source through properties on the `GeneratedMessagePackResolverAttribute`.
