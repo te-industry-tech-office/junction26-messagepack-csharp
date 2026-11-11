@@ -23,5 +23,9 @@ ID | Title
 [MsgPack016](MsgPack016.md) | KeyAttribute-derived attributes are not supported by AOT formatters
 [MsgPack017](MsgPack017.md) | Property with init accessor and initializer
 [MsgPack018](MsgPack018.md) | Unique names required in force map mode
+[MsgPack019](MsgPack019.md) | Generated formatter must be partial
+[MsgPack020](MsgPack020.md) | Generated formatter must implement `IMessagePackFormatter<T>`
+[MsgPack021](MsgPack021.md) | Generated formatter data type not supported
+[MsgPack022](MsgPack022.md) | Surrogate member does not match the formatted type
 
 [1]: https://nuget.org/packages/MessagePackAnalyzer

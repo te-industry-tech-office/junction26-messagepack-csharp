@@ -10,6 +10,12 @@ public record ObjectSerializationInfo : ResolverRegisterInfo
 {
     public required bool IsClass { get; init; }
 
+    /// <summary>
+    /// Gets a value indicating whether the formatter is a user-declared <c>partial</c> class marked with
+    /// <c>[GeneratedMessagePackFormatter]</c>, into which the generator writes the formatter body.
+    /// </summary>
+    public bool IsUserDeclaredFormatter { get; init; }
+
     public required GenericTypeParameterInfo[] GenericTypeParameters { get; init; }
 
     public required MemberSerializationInfo[] ConstructorParameters { get; init; }
@@ -159,6 +165,7 @@ public record ObjectSerializationInfo : ResolverRegisterInfo
         // Compare all the properties by value
         return base.Equals(other)
             && IsClass == other.IsClass
+            && IsUserDeclaredFormatter == other.IsUserDeclaredFormatter
             && GenericTypeParameters.SequenceEqual(other.GenericTypeParameters)
             && ConstructorParameters.SequenceEqual(other.ConstructorParameters)
             && IsIntKey == other.IsIntKey

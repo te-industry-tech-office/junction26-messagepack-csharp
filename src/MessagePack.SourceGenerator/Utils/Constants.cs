@@ -14,6 +14,8 @@ internal static class Constants
     internal const string MessagePackAssumedFormattableAttributeName = "MessagePackAssumedFormattableAttribute";
     internal const string MessagePackObjectAttributeName = "MessagePackObjectAttribute";
     internal const string MessagePackUnionAttributeName = "UnionAttribute";
+    internal const string GeneratedMessagePackFormatterAttributeName = "GeneratedMessagePackFormatterAttribute";
+    internal const string GeneratedMessagePackFormatterSurrogatePropertyName = "SurrogateType";
     internal const string SuppressSourceGenerationPropertyName = "SuppressSourceGeneration";
     internal const string AllowPrivatePropertyName = "AllowPrivate";
 

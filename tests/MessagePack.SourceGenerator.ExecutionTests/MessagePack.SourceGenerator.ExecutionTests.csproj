@@ -14,5 +14,10 @@
     <PackageReference Include="xunit.runner.visualstudio" />
   </ItemGroup>
 
+  <ItemGroup>
+    <!-- Types from an assembly that does not reference MessagePack (https://github.com/MessagePack-CSharp/MessagePack-CSharp/issues/2129). -->
+    <ProjectReference Include="..\MessagePack.SourceGenerator.ExternalTypes\MessagePack.SourceGenerator.ExternalTypes.csproj" />
+  </ItemGroup>
+
   <Import Project="..\SourceGeneratorConsumer.targets" />
 </Project>

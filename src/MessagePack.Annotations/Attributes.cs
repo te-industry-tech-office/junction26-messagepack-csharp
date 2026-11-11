@@ -139,4 +139,40 @@ namespace MessagePack
             this.Arguments = arguments;
         }
     }
+
+    /// <summary>
+    /// Marks a <see langword="partial"/> class that implements <c>IMessagePackFormatter&lt;T&gt;</c> so that the MessagePack source generator
+    /// writes the formatter implementation for <c>T</c>, even when <c>T</c> is declared in another assembly that cannot reference MessagePack.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// The formatted type <c>T</c> is serialized in contractless mode: every public, non-static, read-write instance property and field
+    /// is serialized using its name as a string key. No attributes are required on <c>T</c>.
+    /// </para>
+    /// <para>
+    /// To control keys and membership without touching <c>T</c>, set <see cref="SurrogateType"/> to a type whose
+    /// <see cref="KeyAttribute"/> and <see cref="IgnoreMemberAttribute"/> annotations describe the wire contract.
+    /// The surrogate is only read at compile time and is never instantiated at run time.
+    /// Surrogate members are matched to members of <c>T</c> by name.
+    /// </para>
+    /// </remarks>
+    /// <example>
+    /// <code>
+    /// [GeneratedMessagePackFormatter]
+    /// public partial class MyObjectFormatter : IMessagePackFormatter&lt;ProjectA.MyObject&gt; { }
+    /// </code>
+    /// </example>
+    [AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = false)]
+    public class GeneratedMessagePackFormatterAttribute : Attribute
+    {
+        /// <summary>
+        /// Gets or sets a type whose <see cref="KeyAttribute"/> members define the keys and membership of the formatted type.
+        /// </summary>
+        /// <remarks>
+        /// Each surrogate member that carries a <see cref="KeyAttribute"/> must match a public, read-write instance member of the formatted type by name.
+        /// Surrogate members that carry <see cref="IgnoreMemberAttribute"/> are excluded.
+        /// All keys in the surrogate must be the same kind (all integer or all string).
+        /// </remarks>
+        public Type? SurrogateType { get; set; }
+    }
 }

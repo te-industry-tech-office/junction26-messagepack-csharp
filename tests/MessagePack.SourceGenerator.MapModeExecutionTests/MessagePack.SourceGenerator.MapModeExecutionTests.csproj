@@ -10,7 +10,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="..\MessagePack.SourceGenerator.ExecutionTests\**\*.cs" Exclude="..\MessagePack.SourceGenerator.ExecutionTests\**\GeneratedMessagePackResolver.cs" />
+    <!-- GeneratedFormatterForExternalTypes*.cs need the ExternalTypes assembly, which this project does not reference. -->
+    <Compile Include="..\MessagePack.SourceGenerator.ExecutionTests\**\*.cs" Exclude="..\MessagePack.SourceGenerator.ExecutionTests\**\GeneratedMessagePackResolver.cs;..\MessagePack.SourceGenerator.ExecutionTests\**\GeneratedFormatterForExternalTypes*.cs" />
   </ItemGroup>
 
   <ItemGroup>

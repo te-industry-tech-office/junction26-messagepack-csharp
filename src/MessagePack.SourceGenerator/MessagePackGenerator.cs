@@ -26,8 +26,15 @@ public partial class MessagePackGenerator : IIncrementalGenerator
             predicate: static (node, _) => node is InterfaceDeclarationSyntax,
             transform: static (context, _) => (ITypeSymbol)context.TargetSymbol);
 
+        var generatedFormatters = context.SyntaxProvider.ForAttributeWithMetadataName(
+            $"{AttributeNamespace}.{GeneratedMessagePackFormatterAttributeName}",
+            predicate: static (node, _) => node is ClassDeclarationSyntax,
+            transform: static (context, _) => new GeneratedFormatterRequest(
+                (INamedTypeSymbol)context.TargetSymbol,
+                context.Attributes[0].NamedArguments.FirstOrDefault(kvp => kvp.Key == GeneratedMessagePackFormatterSurrogatePropertyName).Value.Value as INamedTypeSymbol));
+
         var combined =
-            messagePackObjectTypes.Collect().Combine(unionTypes.Collect());
+            messagePackObjectTypes.Collect().Combine(unionTypes.Collect()).Combine(generatedFormatters.Collect());
 
         var source = combined
             .Combine(context.CompilationProvider)
@@ -50,14 +57,22 @@ public partial class MessagePackGenerator : IIncrementalGenerator
                     }
                 }
 
-                foreach (var typeSymbol in s.Left.Left.Left)
+                foreach (var typeSymbol in s.Left.Left.Left.Left)
                 {
                     Collect(typeSymbol);
                 }
 
-                foreach (var typeSymbol in s.Left.Left.Right)
+                foreach (var typeSymbol in s.Left.Left.Left.Right)
                 {
                     Collect(typeSymbol);
+                }
+
+                foreach (GeneratedFormatterRequest request in s.Left.Left.Right)
+                {
+                    if (GeneratedFormatterCollector.Collect(s.Left.Right, options, referenceSymbols, reportDiagnostic: null, request.Formatter, request.Surrogate, ct) is FullModel generatedModel)
+                    {
+                        modelPerType.Add(generatedModel);
+                    }
                 }
 
                 if (!options.KnownFormatters.IsEmpty)
@@ -96,6 +111,24 @@ public partial class MessagePackGenerator : IIncrementalGenerator
 
                 return models.ToImmutableArray();
             });
+
+        // Diagnostics for [GeneratedMessagePackFormatter] classes are reported separately from the models,
+        // so that a rejected formatter produces a diagnostic and no partial output.
+        var generatedFormatterDiagnostics = generatedFormatters
+            .Combine(context.CompilationProvider)
+            .Combine(options)
+            .SelectMany(static (s, ct) =>
+            {
+                List<Diagnostic> diagnostics = new();
+                if (ReferenceSymbols.TryCreate(s.Left.Right, out ReferenceSymbols? referenceSymbols))
+                {
+                    GeneratedFormatterCollector.Collect(s.Left.Right, s.Right, referenceSymbols, diagnostics.Add, s.Left.Left.Formatter, s.Left.Left.Surrogate, ct);
+                }
+
+                return diagnostics.ToImmutableArray();
+            });
+
+        context.RegisterSourceOutput(generatedFormatterDiagnostics, static (context, diagnostic) => context.ReportDiagnostic(diagnostic));
 
         context.RegisterSourceOutput(source, static (context, source) =>
         {

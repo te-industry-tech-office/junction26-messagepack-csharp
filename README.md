@@ -1636,6 +1636,58 @@ Two assembly-level attributes exist to help with mixing in your own custom forma
 
 Learn more about using a mix of your own custom formatters and automatically generated ones in [the Analyzer section](#analyzer).
 
+### Formatters for types from other assemblies
+
+A type that comes from an assembly you cannot change, such as a dependency-free library, may have no MessagePack attributes at all.
+You can still get a source-generated formatter for it by declaring a `partial` formatter class in your own project and marking it with `[GeneratedMessagePackFormatter]`:
+
+```cs
+// ProjectA.MyObject lives in a library that does not reference MessagePack.
+[GeneratedMessagePackFormatter]
+public partial class MyObjectFormatter : IMessagePackFormatter<ProjectA.MyObject>
+{
+}
+```
+
+The source generator writes the body of `MyObjectFormatter`, and the generated `GeneratedMessagePackResolver` registers it automatically.
+Nothing needs to be added to `ProjectA`.
+
+By default the formatter serializes the type in *contractless* mode: every public, read-write instance property and field is serialized under its name as a string key.
+Read-only members are skipped because they cannot be deserialized.
+
+To control keys and membership without touching the type, name a *surrogate* type in the attribute.
+The surrogate's `[Key]` and `[IgnoreMember]` attributes describe the wire contract, and its members are matched to members of the formatted type by name and type.
+The surrogate is only read at compile time and is never instantiated.
+
+```cs
+public class MyObjectSurrogate
+{
+    [Key(0)]
+    public int Id { get; set; }
+
+    [Key(1)]
+    public string Label { get; set; }
+
+    [IgnoreMember]
+    public string Secret { get; set; }
+}
+
+[GeneratedMessagePackFormatter(SurrogateType = typeof(MyObjectSurrogate))]
+public partial class MyObjectFormatter : IMessagePackFormatter<ProjectA.MyObject>
+{
+}
+```
+
+When a surrogate is used, only the members it lists are serialized.
+All of its keys must be integers or all must be strings.
+
+Limitations of this feature:
+- Only classes and structs are supported. Generic types, abstract types, and unions from other assemblies are not.
+- Deserialization uses an accessible parameterless constructor (any struct can be created without one). Constructor parameters are not matched, so types that only have a parameterized constructor are not supported yet.
+- Nested member types are not generated from the formatter. They are resolved through the other resolvers in your composite resolver, as usual.
+- Formatter diagnostics are reported as `MsgPack019` through `MsgPack022`, listed in the [analyzers](doc/analyzers/index.md).
+
+
 ### MagicOnion
 
 [MagicOnion](https://github.com/Cysharp/MagicOnion) is a code-first gRPC framework based on grpc-dotnet and MessagePack. gRPC usually communicates with Protocol Buffers using IDL. But MagicOnion uses MessagePack for C# and does not need IDL. When communicating C# to C#, schemaless (or rather C# classes as schema) is better than using IDL.

@@ -29,6 +29,10 @@ public class MsgPack00xMessagePackAnalyzer : DiagnosticAnalyzer
     public const string AOTDerivedKeyId = "MsgPack016";
     public const string AOTInitPropertyId = "MsgPack017";
     public const string CollidingMemberNamesInForceMapModeId = "MsgPack018";
+    public const string GeneratedFormatterMustBePartialId = "MsgPack019";
+    public const string GeneratedFormatterMustImplementFormatterId = "MsgPack020";
+    public const string GeneratedFormatterDataTypeNotSupportedId = "MsgPack021";
+    public const string SurrogateMemberNotFoundId = "MsgPack022";
 
     internal const string Category = "Usage";
 
@@ -311,6 +315,42 @@ public class MsgPack00xMessagePackAnalyzer : DiagnosticAnalyzer
         isEnabledByDefault: true,
         helpLinkUri: AnalyzerUtilities.GetHelpLink(CollidingMemberNamesInForceMapModeId));
 
+    public static readonly DiagnosticDescriptor GeneratedFormatterMustBePartial = new(
+        id: GeneratedFormatterMustBePartialId,
+        title: "Generated formatter must be partial",
+        category: Category,
+        messageFormat: "The formatter '{0}' is marked with [GeneratedMessagePackFormatter] and must be declared 'partial' so the source generator can write its implementation",
+        defaultSeverity: DiagnosticSeverity.Error,
+        isEnabledByDefault: true,
+        helpLinkUri: AnalyzerUtilities.GetHelpLink(GeneratedFormatterMustBePartialId));
+
+    public static readonly DiagnosticDescriptor GeneratedFormatterMustImplementFormatter = new(
+        id: GeneratedFormatterMustImplementFormatterId,
+        title: "Generated formatter must implement IMessagePackFormatter<T>",
+        category: Category,
+        messageFormat: "The formatter '{0}' is marked with [GeneratedMessagePackFormatter] but does not implement IMessagePackFormatter<T> for exactly one data type",
+        defaultSeverity: DiagnosticSeverity.Error,
+        isEnabledByDefault: true,
+        helpLinkUri: AnalyzerUtilities.GetHelpLink(GeneratedFormatterMustImplementFormatterId));
+
+    public static readonly DiagnosticDescriptor GeneratedFormatterDataTypeNotSupported = new(
+        id: GeneratedFormatterDataTypeNotSupportedId,
+        title: "Generated formatter data type not supported",
+        category: Category,
+        messageFormat: "The formatter '{0}' cannot generate a formatter for '{1}': only accessible, non-generic, non-abstract classes and structs are supported",
+        defaultSeverity: DiagnosticSeverity.Error,
+        isEnabledByDefault: true,
+        helpLinkUri: AnalyzerUtilities.GetHelpLink(GeneratedFormatterDataTypeNotSupportedId));
+
+    public static readonly DiagnosticDescriptor SurrogateMemberNotFound = new(
+        id: SurrogateMemberNotFoundId,
+        title: "Surrogate member does not match the formatted type",
+        category: Category,
+        messageFormat: "The surrogate member '{0}' has no matching public, read-write instance member with the same name and type on '{1}'",
+        defaultSeverity: DiagnosticSeverity.Error,
+        isEnabledByDefault: true,
+        helpLinkUri: AnalyzerUtilities.GetHelpLink(SurrogateMemberNotFoundId));
+
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get; } = ImmutableArray.Create(
         TypeMustBeMessagePackObject,
         MessageFormatterMustBeMessagePackFormatter,
@@ -338,7 +378,11 @@ public class MsgPack00xMessagePackAnalyzer : DiagnosticAnalyzer
         InaccessibleDataType,
         NullableReferenceTypeFormatter,
         MessagePackObjectAllowPrivateRequired,
-        CollidingMemberNamesInForceMapMode);
+        CollidingMemberNamesInForceMapMode,
+        GeneratedFormatterMustBePartial,
+        GeneratedFormatterMustImplementFormatter,
+        GeneratedFormatterDataTypeNotSupported,
+        SurrogateMemberNotFound);
 
     public override void Initialize(AnalysisContext context)
     {

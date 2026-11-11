@@ -30,7 +30,9 @@ namespace MessagePack.SourceGenerator.Transforms
  using (this.EmitNestingTypesAndNamespaces(this.Write)) { 
             this.Write("\r\n");
   bool isFormatterResolverNecessary = GeneratorUtilities.ShouldUseFormatterResolver(Info.Members);
-            this.Write("\tinternal sealed class ");
+            this.Write("\t");
+            this.Write(this.ToStringHelper.ToStringWithCulture(Info.IsUserDeclaredFormatter ? "partial class" : "internal sealed class"));
+            this.Write(" ");
             this.Write(this.ToStringHelper.ToStringWithCulture(Info.Formatter.GetQualifiedName(Qualifiers.None)));
             this.Write(" : MsgPack::Formatters.IMessagePackFormatter<");
             this.Write(this.ToStringHelper.ToStringWithCulture(Info.DataType.GetQualifiedName(genericStyle: GenericParameterStyle.Identifiers)));

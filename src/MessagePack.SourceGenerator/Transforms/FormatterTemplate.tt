@@ -11,7 +11,7 @@ using MsgPack = global::MessagePack;
 <# using (this.EmitNestingTypesAndNamespaces(this.Write)) { #>
 
 <#  bool isFormatterResolverNecessary = GeneratorUtilities.ShouldUseFormatterResolver(Info.Members);#>
-	internal sealed class <#= Info.Formatter.GetQualifiedName(Qualifiers.None) #> : MsgPack::Formatters.IMessagePackFormatter<<#= Info.DataType.GetQualifiedName(genericStyle: GenericParameterStyle.Identifiers) #>>
+	<#= Info.IsUserDeclaredFormatter ? "partial class" : "internal sealed class" #> <#= Info.Formatter.GetQualifiedName(Qualifiers.None) #> : MsgPack::Formatters.IMessagePackFormatter<<#= Info.DataType.GetQualifiedName(genericStyle: GenericParameterStyle.Identifiers) #>>
 <# TransformUtilities.EmitTypeConstraints(Info.Formatter, this.Write); #>
 	{
 <# foreach (var item in Info.Members) { #>

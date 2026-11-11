@@ -23,3 +23,7 @@ MsgPack015 | Usage | Warning | MessagePackObjectAttribute.AllowPrivate should be
 MsgPack016 | Usage | Error | KeyAttribute-derived attributes are not supported by AOT formatters
 MsgPack017 | Usage | Warning | Property with init accessor and initializer
 MsgPack018 | Usage | Error | Unique names required in force map mode
+MsgPack019 | Usage | Error | Generated formatter must be partial
+MsgPack020 | Usage | Error | Generated formatter must implement IMessagePackFormatter<T>
+MsgPack021 | Usage | Error | Generated formatter data type not supported
+MsgPack022 | Usage | Error | Surrogate member does not match the formatted type

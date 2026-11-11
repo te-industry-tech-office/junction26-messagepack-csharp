@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    This assembly deliberately does NOT reference MessagePack.
+    It models a dependency-free library (Project A in https://github.com/MessagePack-CSharp/MessagePack-CSharp/issues/2129)
+    whose types are serialized by generated formatters declared in a consuming assembly.
+  -->
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <Nullable>disable</Nullable>
+    <IsTestProject>false</IsTestProject>
+    <NonShipping>true</NonShipping>
+    <NoWarn>$(NoWarn);CS1591</NoWarn>
+  </PropertyGroup>
+
+</Project>
