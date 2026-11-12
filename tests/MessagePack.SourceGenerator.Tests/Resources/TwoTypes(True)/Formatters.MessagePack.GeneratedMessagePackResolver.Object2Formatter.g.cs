@@ -6,6 +6,9 @@ using MsgPack = global::MessagePack;
 
 namespace MessagePack {
 partial class GeneratedMessagePackResolver {
+#if !NETSTANDARD2_0 && !NETFRAMEWORK
+	[global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
+#endif
 	internal sealed class Object2Formatter : global::MessagePack.Formatters.IMessagePackFormatter<global::Object2>
 	{
 		public void Serialize(ref global::MessagePack.MessagePackWriter writer, global::Object2 value, global::MessagePack.MessagePackSerializerOptions options)

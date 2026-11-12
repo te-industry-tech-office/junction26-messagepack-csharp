@@ -55,7 +55,7 @@ internal static class TransformUtilities
                 writer($"partial {kind} {nestingType.GetQualifiedName(Qualifiers.None, GenericParameterStyle.Identifiers)}");
                 bool anyConstraints = EmitTypeConstraints(nestingType, writer, leadingLineFeedIfAny: true);
 
-                writer(anyConstraints ? "{" : " {\r\n");
+                writer(anyConstraints ? "{\r\n" : " {\r\n");
                 reverseAction.Push(new DisposeAction(() => writer("}\r\n")));
 
                 return new DisposeAction(() =>

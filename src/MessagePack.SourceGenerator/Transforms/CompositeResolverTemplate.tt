@@ -4,6 +4,9 @@ using MsgPack = global::MessagePack;
 
 <# using (TransformUtilities.EmitNestingTypesAndNamespaces(this.ResolverName, this.Write)) { #>
 
+#if !NETSTANDARD2_0 && !NETFRAMEWORK
+[global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
+#endif
 partial class <#= ResolverName.Name #> : MsgPack::IFormatterResolver
 {
 	public static readonly <#= ResolverName.Name #> Instance = new <#= ResolverName.Name #>();
@@ -29,6 +32,9 @@ partial class <#= ResolverName.Name #> : MsgPack::IFormatterResolver
 		return FormatterCache<T>.Formatter;
 	}
 
+#if !NETSTANDARD2_0 && !NETFRAMEWORK
+	[global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
+#endif
 	static class FormatterCache<T>
 	{
 		internal static readonly MsgPack::Formatters.IMessagePackFormatter<T> Formatter;

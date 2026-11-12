@@ -27,7 +27,7 @@ namespace MessagePack.SourceGenerator.Transforms
         {
             this.Write("\r\nusing MsgPack = global::MessagePack;\r\n\r\n");
  using (this.EmitNestingTypesAndNamespaces(this.Write)) { 
-            this.Write("\tinternal sealed class ");
+            this.Write("#if !NETSTANDARD2_0 && !NETFRAMEWORK\r\n\t[global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]\r\n#endif\r\n\tinternal sealed class ");
             this.Write(this.ToStringHelper.ToStringWithCulture(Info.Formatter.GetQualifiedName(Qualifiers.None)));
             this.Write(": MsgPack::Formatters.IMessagePackFormatter<");
             this.Write(this.ToStringHelper.ToStringWithCulture(Info.DataType.GetQualifiedName()));

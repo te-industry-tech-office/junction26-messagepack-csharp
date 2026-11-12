@@ -9,6 +9,10 @@ using MsgPack = global::MessagePack;
 partial class HasPrivateSerializedMemberAndIsGenericOrdinal<T>
 		where T : struct
 {
+
+#if !NETSTANDARD2_0 && !NETFRAMEWORK
+	[global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
+#endif
 	internal sealed class HasPrivateSerializedMemberAndIsGenericOrdinalFormatter : MsgPack::Formatters.IMessagePackFormatter<global::HasPrivateSerializedMemberAndIsGenericOrdinal<T>>
 	{
 

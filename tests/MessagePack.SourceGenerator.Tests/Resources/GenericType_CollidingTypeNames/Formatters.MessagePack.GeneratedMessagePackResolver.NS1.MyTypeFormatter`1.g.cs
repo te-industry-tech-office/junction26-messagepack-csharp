@@ -10,6 +10,9 @@ namespace MessagePack {
 partial class GeneratedMessagePackResolver {
 internal partial class NS1 {
 
+#if !NETSTANDARD2_0 && !NETFRAMEWORK
+	[global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
+#endif
 	internal sealed class MyTypeFormatter<T> : MsgPack::Formatters.IMessagePackFormatter<global::NS1.MyType<T>>
 	{
 

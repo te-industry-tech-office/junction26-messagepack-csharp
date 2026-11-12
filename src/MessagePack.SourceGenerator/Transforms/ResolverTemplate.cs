@@ -35,7 +35,7 @@ namespace MessagePack.SourceGenerator.Transforms
             this.Write(")]\r\n\r\n");
  using (TransformUtilities.EmitNestingTypesAndNamespaces(this.ResolverName, this.Write)) { 
             this.Write("\r\n/// <summary>A MessagePack resolver that uses generated formatters for types in" +
-                    " this assembly.</summary>\r\npartial class ");
+                    " this assembly.</summary>\r\n#if !NETSTANDARD2_0 && !NETFRAMEWORK\r\n[global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]\r\n#endif\r\npartial class ");
             this.Write(this.ToStringHelper.ToStringWithCulture(ResolverName.Name));
             this.Write(" : MsgPack::IFormatterResolver\r\n{\r\n\t/// <summary>An instance of this resolver tha" +
                     "t only returns formatters specifically generated for types in this assembly.</su" +
@@ -52,6 +52,9 @@ namespace MessagePack.SourceGenerator.Transforms
 		return FormatterCache<T>.Formatter;
 	}
 
+#if !NETSTANDARD2_0 && !NETFRAMEWORK
+	[global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
+#endif
 	private static class FormatterCache<T>
 	{
 		internal static readonly MsgPack::Formatters.IMessagePackFormatter<T> Formatter;
@@ -61,7 +64,7 @@ namespace MessagePack.SourceGenerator.Transforms
 			var f = ");
             this.Write(this.ToStringHelper.ToStringWithCulture(ResolverName.Name));
             this.Write("GetFormatterHelper.GetFormatter(typeof(T));\r\n\t\t\tif (f != null)\r\n\t\t\t{\r\n\t\t\t\tFormatt" +
-                    "er = (MsgPack::Formatters.IMessagePackFormatter<T>)f;\r\n\t\t\t}\r\n\t\t}\r\n\t}\r\n\r\n\tprivate" +
+                    "er = (MsgPack::Formatters.IMessagePackFormatter<T>)f;\r\n\t\t\t}\r\n\t\t}\r\n\t}\r\n\r\n#if !NETSTANDARD2_0 && !NETFRAMEWORK\r\n\t[global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]\r\n#endif\r\n\tprivate" +
                     " static class ");
             this.Write(this.ToStringHelper.ToStringWithCulture(ResolverName.Name));
             this.Write("GetFormatterHelper\r\n\t{\r\n");

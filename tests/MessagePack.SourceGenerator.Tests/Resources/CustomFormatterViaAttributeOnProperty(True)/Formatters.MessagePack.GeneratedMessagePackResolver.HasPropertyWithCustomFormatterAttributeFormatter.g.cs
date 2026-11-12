@@ -6,6 +6,9 @@ using MsgPack = global::MessagePack;
 
 namespace MessagePack {
 partial class GeneratedMessagePackResolver {
+#if !NETSTANDARD2_0 && !NETFRAMEWORK
+	[global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
+#endif
 	internal sealed class HasPropertyWithCustomFormatterAttributeFormatter : global::MessagePack.Formatters.IMessagePackFormatter<global::HasPropertyWithCustomFormatterAttribute>
 	{
 		private readonly global::UnserializableRecordFormatter __CustomValueCustomFormatter__ = new global::UnserializableRecordFormatter();

@@ -10,6 +10,9 @@ namespace MessagePack {
 partial class GeneratedMessagePackResolver {
 internal partial class TempProject {
 
+#if !NETSTANDARD2_0 && !NETFRAMEWORK
+	[global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
+#endif
 	internal sealed class MyGenericObjectFormatter<T1, T2> : MsgPack::Formatters.IMessagePackFormatter<global::TempProject.MyGenericObject<T1, T2>>
 		where T1 : class?
 		where T2 : class

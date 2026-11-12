@@ -6,7 +6,11 @@ using MsgPack = global::MessagePack;
 
 partial class HasPrivateSerializedMemberAndIsGenericNamed<T>
 		where T : struct
-{	internal sealed class HasPrivateSerializedMemberAndIsGenericNamedFormatter : global::MessagePack.Formatters.IMessagePackFormatter<global::HasPrivateSerializedMemberAndIsGenericNamed<T>>
+{
+#if !NETSTANDARD2_0 && !NETFRAMEWORK
+	[global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
+#endif
+	internal sealed class HasPrivateSerializedMemberAndIsGenericNamedFormatter : global::MessagePack.Formatters.IMessagePackFormatter<global::HasPrivateSerializedMemberAndIsGenericNamed<T>>
 	{
 		// value
 		private static global::System.ReadOnlySpan<byte> GetSpan_value() => new byte[1 + 5] { 165, 118, 97, 108, 117, 101 };

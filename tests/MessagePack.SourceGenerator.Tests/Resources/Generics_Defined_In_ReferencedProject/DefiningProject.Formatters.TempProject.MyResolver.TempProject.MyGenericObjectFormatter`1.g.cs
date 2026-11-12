@@ -10,6 +10,9 @@ namespace TempProject {
 partial class MyResolver {
 internal partial class TempProject {
 
+#if !NETSTANDARD2_0 && !NETFRAMEWORK
+	[global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
+#endif
 	internal sealed class MyGenericObjectFormatter<T> : MsgPack::Formatters.IMessagePackFormatter<global::TempProject.MyGenericObject<T>>
 	{
 

@@ -8,6 +8,9 @@ using MsgPack = global::MessagePack;
 
 partial class SampleObject {
 
+#if !NETSTANDARD2_0 && !NETFRAMEWORK
+	[global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
+#endif
 	internal sealed class SampleObjectFormatter : MsgPack::Formatters.IMessagePackFormatter<global::SampleObject>
 	{
 		private readonly global::ValueTupleFormatter<string> __TupleTestCustomFormatter__ = new global::ValueTupleFormatter<string>();

@@ -7,6 +7,9 @@ using MsgPack = global::MessagePack;
 namespace MessagePack {
 partial class GeneratedMessagePackResolver {
 internal partial class ContainingClass {
+#if !NETSTANDARD2_0 && !NETFRAMEWORK
+	[global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
+#endif
 	internal sealed class MyMessagePackObjectFormatter : global::MessagePack.Formatters.IMessagePackFormatter<global::ContainingClass.MyMessagePackObject>
 	{
 		// EnumValue

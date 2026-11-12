@@ -24,7 +24,7 @@ namespace MessagePack.SourceGenerator.Transforms
         {
             this.Write("\r\nusing MsgPack = global::MessagePack;\r\n\r\n");
  using (TransformUtilities.EmitNestingTypesAndNamespaces(this.ResolverName, this.Write)) { 
-            this.Write("\r\npartial class ");
+            this.Write("\r\n#if !NETSTANDARD2_0 && !NETFRAMEWORK\r\n[global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]\r\n#endif\r\npartial class ");
             this.Write(this.ToStringHelper.ToStringWithCulture(ResolverName.Name));
             this.Write(" : MsgPack::IFormatterResolver\r\n{\r\n\tpublic static readonly ");
             this.Write(this.ToStringHelper.ToStringWithCulture(ResolverName.Name));
@@ -53,6 +53,9 @@ namespace MessagePack.SourceGenerator.Transforms
 		return FormatterCache<T>.Formatter;
 	}
 
+#if !NETSTANDARD2_0 && !NETFRAMEWORK
+	[global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
+#endif
 	static class FormatterCache<T>
 	{
 		internal static readonly MsgPack::Formatters.IMessagePackFormatter<T> Formatter;

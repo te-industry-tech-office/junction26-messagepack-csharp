@@ -11,6 +11,9 @@ partial class GeneratedMessagePackResolver {
 internal partial class A {
 internal partial class B {
 
+#if !NETSTANDARD2_0 && !NETFRAMEWORK
+	[global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
+#endif
 	internal sealed class CFormatter : MsgPack::Formatters.IMessagePackFormatter<global::A.B.C>
 	{
 

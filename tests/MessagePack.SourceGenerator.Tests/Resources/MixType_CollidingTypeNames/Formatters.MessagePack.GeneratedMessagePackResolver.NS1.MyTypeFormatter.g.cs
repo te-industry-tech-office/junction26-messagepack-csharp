@@ -8,6 +8,9 @@ namespace MessagePack {
 partial class GeneratedMessagePackResolver {
 internal partial class NS1 {
 
+#if !NETSTANDARD2_0 && !NETFRAMEWORK
+	[global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
+#endif
 	internal sealed class MyTypeFormatter : MsgPack::Formatters.IMessagePackFormatter<global::NS1.MyType>
 	{
 		public void Serialize(ref MsgPack::MessagePackWriter writer, global::NS1.MyType value, MsgPack::MessagePackSerializerOptions options)

@@ -1636,6 +1636,9 @@ Two assembly-level attributes exist to help with mixing in your own custom forma
 
 Learn more about using a mix of your own custom formatters and automatically generated ones in [the Analyzer section](#analyzer).
 
+All generated formatters and resolvers are decorated with `[ExcludeFromCodeCoverage]`, so generated code does not skew code coverage reports.
+The attribute is only emitted for targets where it is available (not `netstandard2.0` or .NET Framework).
+
 ### MagicOnion
 
 [MagicOnion](https://github.com/Cysharp/MagicOnion) is a code-first gRPC framework based on grpc-dotnet and MessagePack. gRPC usually communicates with Protocol Buffers using IDL. But MagicOnion uses MessagePack for C# and does not need IDL. When communicating C# to C#, schemaless (or rather C# classes as schema) is better than using IDL.

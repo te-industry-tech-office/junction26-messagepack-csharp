@@ -9,6 +9,9 @@ using MsgPack = global::MessagePack;
 namespace MessagePack {
 
 /// <summary>A MessagePack resolver that uses generated formatters for types in this assembly.</summary>
+#if !NETSTANDARD2_0 && !NETFRAMEWORK
+[global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
+#endif
 partial class GeneratedMessagePackResolver : MsgPack::IFormatterResolver
 {
 	/// <summary>An instance of this resolver that only returns formatters specifically generated for types in this assembly.</summary>
@@ -23,6 +26,9 @@ partial class GeneratedMessagePackResolver : MsgPack::IFormatterResolver
 		return FormatterCache<T>.Formatter;
 	}
 
+#if !NETSTANDARD2_0 && !NETFRAMEWORK
+	[global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
+#endif
 	private static class FormatterCache<T>
 	{
 		internal static readonly MsgPack::Formatters.IMessagePackFormatter<T> Formatter;
@@ -37,6 +43,9 @@ partial class GeneratedMessagePackResolver : MsgPack::IFormatterResolver
 		}
 	}
 
+#if !NETSTANDARD2_0 && !NETFRAMEWORK
+	[global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
+#endif
 	private static class GeneratedMessagePackResolverGetFormatterHelper
 	{
 		private static readonly global::System.Collections.Generic.Dictionary<global::System.Type, int> closedTypeLookup = new global::System.Collections.Generic.Dictionary<global::System.Type, int>(1)

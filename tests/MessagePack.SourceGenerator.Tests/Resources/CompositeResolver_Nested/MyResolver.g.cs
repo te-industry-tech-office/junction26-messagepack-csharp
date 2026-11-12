@@ -3,6 +3,9 @@ using MsgPack = global::MessagePack;
 
 partial class Test {
 
+#if !NETSTANDARD2_0 && !NETFRAMEWORK
+[global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
+#endif
 partial class MyResolver : MsgPack::IFormatterResolver
 {
 	public static readonly MyResolver Instance = new MyResolver();
@@ -22,6 +25,9 @@ partial class MyResolver : MsgPack::IFormatterResolver
 		return FormatterCache<T>.Formatter;
 	}
 
+#if !NETSTANDARD2_0 && !NETFRAMEWORK
+	[global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
+#endif
 	static class FormatterCache<T>
 	{
 		internal static readonly MsgPack::Formatters.IMessagePackFormatter<T> Formatter;

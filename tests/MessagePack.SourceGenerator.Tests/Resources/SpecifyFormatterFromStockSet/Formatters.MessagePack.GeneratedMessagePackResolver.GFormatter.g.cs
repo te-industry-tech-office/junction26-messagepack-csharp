@@ -9,6 +9,9 @@ using MsgPack = global::MessagePack;
 namespace MessagePack {
 partial class GeneratedMessagePackResolver {
 
+#if !NETSTANDARD2_0 && !NETFRAMEWORK
+	[global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
+#endif
 	internal sealed class GFormatter : MsgPack::Formatters.IMessagePackFormatter<global::G>
 	{
 		private readonly global::MessagePack.Formatters.StringInterningFormatter __aCustomFormatter__ = new global::MessagePack.Formatters.StringInterningFormatter();

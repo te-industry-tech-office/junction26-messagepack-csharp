@@ -7,6 +7,9 @@ using MsgPack = global::MessagePack;
 namespace MessagePack {
 partial class GeneratedMessagePackResolver {
 internal partial class MyTestNamespace {
+#if !NETSTANDARD2_0 && !NETFRAMEWORK
+	[global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
+#endif
 	internal sealed class IMyTypeFormatter: MsgPack::Formatters.IMessagePackFormatter<global::MyTestNamespace.IMyType>
 	{
 		private readonly global::System.Collections.Generic.Dictionary<global::System.RuntimeTypeHandle, global::System.Collections.Generic.KeyValuePair<int, int>> typeToKeyAndJumpMap;

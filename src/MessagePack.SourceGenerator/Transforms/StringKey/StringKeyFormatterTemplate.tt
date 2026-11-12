@@ -15,6 +15,9 @@ using MsgPack = global::MessagePack;
 
 	bool isFormatterResolverNecessary = GeneratorUtilities.ShouldUseFormatterResolver(Info.Members); #>
 <# using (this.EmitNestingTypesAndNamespaces(this.Write)) { #>
+#if !NETSTANDARD2_0 && !NETFRAMEWORK
+	[global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
+#endif
 	internal sealed class <#= Info.Formatter.GetQualifiedName(Qualifiers.None) #> : global::MessagePack.Formatters.IMessagePackFormatter<<#= Info.DataType.GetQualifiedName() #>>
 <# TransformUtilities.EmitTypeConstraints(Info.Formatter, this.Write); #>
 	{

@@ -8,6 +8,9 @@ using MsgPack = global::MessagePack;
 
 partial class MyObject {
 
+#if !NETSTANDARD2_0 && !NETFRAMEWORK
+	[global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
+#endif
 	internal sealed class MyObjectFormatter : MsgPack::Formatters.IMessagePackFormatter<global::MyObject>
 	{
 

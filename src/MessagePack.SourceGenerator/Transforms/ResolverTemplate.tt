@@ -11,6 +11,9 @@ using MsgPack = global::MessagePack;
 <# using (TransformUtilities.EmitNestingTypesAndNamespaces(this.ResolverName, this.Write)) { #>
 
 /// <summary>A MessagePack resolver that uses generated formatters for types in this assembly.</summary>
+#if !NETSTANDARD2_0 && !NETFRAMEWORK
+[global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
+#endif
 partial class <#= ResolverName.Name #> : MsgPack::IFormatterResolver
 {
 	/// <summary>An instance of this resolver that only returns formatters specifically generated for types in this assembly.</summary>
@@ -25,6 +28,9 @@ partial class <#= ResolverName.Name #> : MsgPack::IFormatterResolver
 		return FormatterCache<T>.Formatter;
 	}
 
+#if !NETSTANDARD2_0 && !NETFRAMEWORK
+	[global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
+#endif
 	private static class FormatterCache<T>
 	{
 		internal static readonly MsgPack::Formatters.IMessagePackFormatter<T> Formatter;
@@ -39,6 +45,9 @@ partial class <#= ResolverName.Name #> : MsgPack::IFormatterResolver
 		}
 	}
 
+#if !NETSTANDARD2_0 && !NETFRAMEWORK
+	[global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
+#endif
 	private static class <#= ResolverName.Name #>GetFormatterHelper
 	{
 <#

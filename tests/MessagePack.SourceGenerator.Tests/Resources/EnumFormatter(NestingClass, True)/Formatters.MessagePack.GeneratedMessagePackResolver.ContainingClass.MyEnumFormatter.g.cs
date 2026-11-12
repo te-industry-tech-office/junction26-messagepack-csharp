@@ -8,6 +8,9 @@ namespace MessagePack {
 partial class GeneratedMessagePackResolver {
 internal partial class ContainingClass {
 
+#if !NETSTANDARD2_0 && !NETFRAMEWORK
+	[global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
+#endif
 	internal sealed class MyEnumFormatter : MsgPack::Formatters.IMessagePackFormatter<global::ContainingClass.MyEnum>
 	{
 		public void Serialize(ref MsgPack::MessagePackWriter writer, global::ContainingClass.MyEnum value, MsgPack::MessagePackSerializerOptions options)

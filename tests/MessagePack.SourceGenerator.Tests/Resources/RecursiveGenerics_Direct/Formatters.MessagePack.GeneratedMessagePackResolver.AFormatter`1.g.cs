@@ -9,6 +9,9 @@ using MsgPack = global::MessagePack;
 namespace MessagePack {
 partial class GeneratedMessagePackResolver {
 
+#if !NETSTANDARD2_0 && !NETFRAMEWORK
+	[global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
+#endif
 	internal sealed class AFormatter<T> : MsgPack::Formatters.IMessagePackFormatter<global::A<T>>
 		where T : global::System.IEquatable<global::A<T>>
 	{

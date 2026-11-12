@@ -9,6 +9,9 @@ using MsgPack = global::MessagePack;
 namespace MessagePack {
 partial class GeneratedMessagePackResolver {
 
+#if !NETSTANDARD2_0 && !NETFRAMEWORK
+	[global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
+#endif
 	internal sealed class GenericConstrainedClassIntKeyFormatter<T1, T2> : MsgPack::Formatters.IMessagePackFormatter<global::GenericConstrainedClassIntKey<T1, T2>>
 		where T1 : class
 		where T2 : class, global::System.Collections.Generic.IEqualityComparer<T1>
